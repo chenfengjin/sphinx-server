@@ -1,17 +1,11 @@
-FROM python:3.8.0-alpine3.10
+FROM ubuntu:18.04
 
-MAINTAINER Loïc Pauletto <loic.pauletto@gmail.com>
-MAINTAINER Quentin de Longraye <quentin@dldl.fr>
-
+RUN  sed -i s/archive.ubuntu.com/mirrors.163.com/g /etc/apt/sources.list
+RUN  sed -i s/archive.ubuntu.com/mirrors.163.com/g /etc/apt/sources.list
+RUN apt-get update && apt-get install -y python3-pip  git 
 COPY ./requirements.txt requirements.txt
+RUN pip3 install --no-cache-dir  -r requirements.txt -i https://pypi.douban.com/simple/ 
 
-RUN apk add --no-cache --virtual --update py3-pip make wget ca-certificates ttf-dejavu openjdk8-jre graphviz \
-    && pip install --upgrade pip \
-    && pip install --no-cache-dir  -r requirements.txt
-
-RUN wget http://downloads.sourceforge.net/project/plantuml/plantuml.jar -P /opt/ \
-    && echo -e '#!/bin/sh -e\njava -jar /opt/plantuml.jar "$@"' > /usr/local/bin/plantuml \
-    && chmod +x /usr/local/bin/plantuml
 
 COPY ./server.py /opt/sphinx-server/
 COPY ./.sphinx-server.yml /opt/sphinx-server/
